@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="theme-dark">
+    <div class="container">
+        <header>
+            <h1>Sudoku</h1>
+            <div class="controls-top">
+                <select id="difficulty">
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                    <option value="expert">Expert</option>
+                </select>
+                <button id="new-game-btn">New Game</button>
+                <select id="theme-select" title="Choose theme">
+                    <option value="dark">🌙 Dark (Default)</option>
+                    <option value="classic">⬛ Classic B&W</option>
+                    <option value="ocean">🌊 Ocean Blue</option>
+                    <option value="sunset">🌅 Sunset Warm</option>
+                </select>
+            </div>
+        </header>
+
+        <div class="stats-bar">
+            <div class="stat" id="timer-display">⏱ 00:00</div>
+            <div class="stat" id="mistakes-display">Mistakes: 0 / 3</div>
+            <div class="stat" id="hints-display">Hints left: 3</div>
+        </div>
+
+        <div id="sudoku-grid" class="sudoku-grid"></div>
+
+        <div class="number-pad">
+            <button data-num="1">1</button>
+            <button data-num="2">2</button>
+            <button data-num="3">3</button>
+            <button data-num="4">4</button>
+            <button data-num="5">5</button>
+            <button data-num="6">6</button>
+            <button data-num="7">7</button>
+            <button data-num="8">8</button>
+            <button data-num="9">9</button>
+        </div>
+
+        <div class="action-buttons">
+            <button id="undo-btn" title="Undo (Ctrl+Z)">↩ Undo</button>
+            <button id="erase-btn" title="Erase (Delete)">🧹 Erase</button>
+            <button id="notes-btn" title="Toggle Notes (N)">✏️ Notes <span id="notes-indicator">OFF</span></button>
+            <button id="hint-btn" title="Hint (H)">💡 Hint</button>
+            <button id="guide-btn" title="Strategy Guide (G)">🎯 Guide</button>
+        </div>
+    </div>
+
+    <!-- Game Over Overlay -->
+    <div id="game-over-overlay" class="overlay hidden">
+        <div class="overlay-content">
+            <h2>Game Over</h2>
+            <p>You made 3 mistakes!</p>
+            <button id="play-again-btn">Play Again</button>
+        </div>
+    </div>
+
+    <!-- Puzzle Solved Overlay -->
+    <div id="solved-overlay" class="overlay hidden">
+        <div class="overlay-content">
+            <h2>🎉 Puzzle Solved!</h2>
+            <p id="solved-stats"></p>
+            <button id="new-puzzle-btn">New Puzzle</button>
+        </div>
+    </div>
+
+    <!-- Strategy Guide Panel -->
+    <div id="guide-panel" class="guide-panel hidden">
+        <div class="guide-header">
+            <h3>🎯 Strategy Guide</h3>
+            <button id="guide-close-btn" title="Close (Escape)">✕</button>
+        </div>
+        <div class="guide-body">
+            <div id="guide-explanation" class="guide-explanation">
+                Click <strong>Next Hint</strong> to see the next logical move.
+            </div>
+            <div id="guide-technique" class="guide-technique"></div>
+            <div id="guide-candidates" class="guide-candidates"></div>
+        </div>
+        <div class="guide-footer">
+            <button id="guide-prev-btn">← Previous</button>
+            <button id="guide-next-btn">Next Hint →</button>
+            <button id="guide-apply-btn">Apply This Move</button>
+        </div>
+    </div>
+
+    <script src="js/main.js?v=5"></script>
+</body>
+</html>

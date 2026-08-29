@@ -1,0 +1,523 @@
+/* ============================================================
+   SUDOKU GAME — Complete Styles (4 Themes + Guide Panel)
+   ============================================================ */
+
+/* ---- Theme Variables ---- */
+
+.theme-dark {
+    --bg-primary: #1a1a2e;
+    --bg-secondary: #16213e;
+    --bg-cell: #0f3460;
+    --bg-selected: #533483;
+    --bg-highlight: rgba(83, 52, 131, 0.3);
+    --bg-same-num: rgba(108, 99, 255, 0.2);
+    --bg-guide-cell: rgba(255, 215, 0, 0.4);
+    --text-primary: #e6e6e6;
+    --text-secondary: #a0a0a0;
+    --text-given: #ffffff;
+    --text-user: #6c63ff;
+    --text-conflict: #ff4757;
+    --text-guide: #ffd700;
+    --border-primary: #2a2a4e;
+    --border-thick: #3a3a6e;
+    --accent: #6c63ff;
+    --accent-hover: #8b7fff;
+    --overlay-bg: rgba(15, 10, 40, 0.92);
+    --btn-bg: #16213e;
+    --btn-border: #3a3a6e;
+    --guide-panel-bg: #1a1a2e;
+    --guide-highlight: rgba(255, 215, 0, 0.15);
+}
+
+.theme-classic {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f0f0f0;
+    --bg-cell: #ffffff;
+    --bg-selected: #d0e8ff;
+    --bg-highlight: rgba(0, 100, 200, 0.08);
+    --bg-same-num: rgba(0, 100, 200, 0.15);
+    --bg-guide-cell: rgba(255, 200, 0, 0.3);
+    --text-primary: #222222;
+    --text-secondary: #777777;
+    --text-given: #000000;
+    --text-user: #1a6dd4;
+    --text-conflict: #cc0000;
+    --text-guide: #cc8800;
+    --border-primary: #cccccc;
+    --border-thick: #333333;
+    --accent: #1a6dd4;
+    --accent-hover: #0d5aad;
+    --overlay-bg: rgba(0, 0, 0, 0.6);
+    --btn-bg: #f5f5f5;
+    --btn-border: #cccccc;
+    --guide-panel-bg: #ffffff;
+    --guide-highlight: rgba(255, 200, 0, 0.12);
+}
+
+.theme-ocean {
+    --bg-primary: #0a1628;
+    --bg-secondary: #0d2137;
+    --bg-cell: #132e4b;
+    --bg-selected: #1a5276;
+    --bg-highlight: rgba(26, 82, 118, 0.3);
+    --bg-same-num: rgba(52, 152, 219, 0.2);
+    --bg-guide-cell: rgba(0, 255, 200, 0.3);
+    --text-primary: #d4e6f1;
+    --text-secondary: #85c1e9;
+    --text-given: #ffffff;
+    --text-user: #3498db;
+    --text-conflict: #ff6b6b;
+    --text-guide: #00ffc8;
+    --border-primary: #1a3a5c;
+    --border-thick: #2c5f8a;
+    --accent: #3498db;
+    --accent-hover: #5dade2;
+    --overlay-bg: rgba(5, 15, 30, 0.92);
+    --btn-bg: #0d2137;
+    --btn-border: #1a3a5c;
+    --guide-panel-bg: #0a1628;
+    --guide-highlight: rgba(0, 255, 200, 0.1);
+}
+
+.theme-sunset {
+    --bg-primary: #1a0a00;
+    --bg-secondary: #2d1810;
+    --bg-cell: #3d2417;
+    --bg-selected: #5c3a28;
+    --bg-highlight: rgba(92, 58, 40, 0.3);
+    --bg-same-num: rgba(255, 107, 53, 0.15);
+    --bg-guide-cell: rgba(255, 165, 0, 0.35);
+    --text-primary: #f5cba7;
+    --text-secondary: #c0a48a;
+    --text-given: #ffeaa7;
+    --text-user: #ff6b35;
+    --text-conflict: #ff4444;
+    --text-guide: #ffa500;
+    --border-primary: #4a2c1a;
+    --border-thick: #6b4226;
+    --accent: #ff6b35;
+    --accent-hover: #ff8c5a;
+    --overlay-bg: rgba(15, 5, 0, 0.92);
+    --btn-bg: #2d1810;
+    --btn-border: #4a2c1a;
+    --guide-panel-bg: #1a0a00;
+    --guide-highlight: rgba(255, 165, 0, 0.1);
+}
+
+/* ---- Base Styles ---- */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ---- Header ---- */
+
+header {
+    text-align: center;
+}
+
+h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+    color: var(--accent);
+}
+
+.controls-top {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+}
+
+select, button {
+    font-family: 'Inter', system-ui, sans-serif;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#difficulty {
+    padding: 4px 8px;
+    background: var(--btn-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--btn-border);
+    font-size: 0.8rem;
+}
+
+#new-game-btn, #theme-select {
+    padding: 4px 12px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+#new-game-btn:hover, #theme-select:hover {
+    background: var(--accent-hover);
+}
+
+/* ---- Stats Bar ---- */
+
+.stats-bar {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    width: 100%;
+    max-width: 360px;
+}
+
+.stat {
+    padding: 4px 8px;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    flex: 1;
+    text-align: center;
+}
+
+/* ---- Sudoku Grid ---- */
+
+.sudoku-grid {
+    display: grid;
+    grid-template-columns: repeat(9, 34px);
+    grid-template-rows: repeat(9, 34px);
+    border: 2px solid var(--border-thick);
+    gap: 0;
+}
+
+.cell {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 600;
+    border: 1px solid var(--border-primary);
+    background-color: var(--bg-cell);
+    color: var(--text-user);
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    transition: background-color 0.1s ease;
+}
+
+.cell:hover {
+    filter: brightness(1.2);
+}
+
+/* Thick borders for 3x3 boxes */
+.cell.border-top {
+    border-top: 2px solid var(--border-thick);
+}
+.cell.border-left {
+    border-left: 2px solid var(--border-thick);
+}
+
+/* Cell states */
+.cell.given {
+    color: var(--text-given);
+    font-weight: 700;
+}
+
+.cell.user-input {
+    color: var(--text-user);
+}
+
+.cell.selected {
+    background-color: var(--bg-selected) !important;
+}
+
+.cell.highlighted {
+    background-color: var(--bg-highlight);
+}
+
+.cell.same-number {
+    background-color: var(--bg-same-num);
+}
+
+.cell.conflict {
+    color: var(--text-conflict) !important;
+    animation: shake 0.3s ease;
+}
+
+/* Guide mode cell highlighting */
+.cell.guide-target {
+    background-color: var(--bg-guide-cell) !important;
+    box-shadow: inset 0 0 0 2px var(--text-guide);
+}
+
+.cell.guide-eliminated {
+    position: relative;
+}
+
+.cell.guide-eliminated::after {
+    content: '✕';
+    position: absolute;
+    top: 1px;
+    right: 2px;
+    font-size: 8px;
+    color: var(--text-guide);
+    opacity: 0.7;
+}
+
+.cell.guide-related {
+    background-color: var(--guide-highlight);
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
+}
+
+/* ---- Notes Grid (pencil marks) ---- */
+
+.notes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    width: 100%;
+    height: 100%;
+    font-size: 8px;
+    color: var(--text-secondary);
+}
+
+.notes-grid span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ---- Number Pad ---- */
+
+.number-pad {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 4px;
+    width: 100%;
+    max-width: 360px;
+}
+
+.number-pad button {
+    padding: 8px 4px;
+    background: var(--btn-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--btn-border);
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.number-pad button:hover {
+    background: var(--accent);
+    color: white;
+}
+
+/* ---- Action Buttons ---- */
+
+.action-buttons {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+    max-width: 360px;
+}
+
+.action-buttons button {
+    flex: 1;
+    padding: 8px 4px;
+    background: var(--btn-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--btn-border);
+    font-size: 0.7rem;
+}
+
+.action-buttons button:hover {
+    background: var(--accent);
+    color: white;
+}
+
+#notes-btn.active {
+    background: var(--accent) !important;
+    color: white !important;
+}
+
+/* ---- Overlays ---- */
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--overlay-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.overlay.hidden {
+    display: none;
+}
+
+.overlay-content {
+    text-align: center;
+    background: var(--bg-secondary);
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.overlay-content h2 {
+    margin-bottom: 12px;
+    color: var(--accent);
+}
+
+.overlay-content p {
+    margin-bottom: 20px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.overlay-content button {
+    padding: 12px 32px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.overlay-content button:hover {
+    background: var(--accent-hover);
+}
+
+/* ---- Strategy Guide Panel ---- */
+
+.guide-panel {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(95vw, 420px);
+    background: var(--guide-panel-bg);
+    border: 1px solid var(--border-thick);
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.5);
+    z-index: 200;
+    padding: 16px;
+    transition: transform 0.3s ease;
+}
+
+.guide-panel.hidden {
+    transform: translateX(-50%) translateY(100%);
+}
+
+.guide-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.guide-header h3 {
+    font-size: 1rem;
+    color: var(--text-guide);
+}
+
+#guide-close-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.guide-body {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 12px;
+}
+
+.guide-explanation {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    line-height: 1.5;
+    padding: 8px;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.guide-technique {
+    font-size: 0.75rem;
+    color: var(--text-guide);
+    font-weight: 600;
+    padding: 4px 8px;
+    background: var(--guide-highlight);
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+
+.guide-candidates {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    padding: 6px;
+    background: var(--bg-cell);
+    border-radius: 4px;
+}
+
+.guide-footer {
+    display: flex;
+    gap: 8px;
+}
+
+.guide-footer button {
+    flex: 1;
+    padding: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: var(--btn-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--btn-border);
+}
+
+.guide-footer button:hover {
+    background: var(--accent);
+    color: white;
+}
+
+#guide-apply-btn {
+    background: var(--text-guide) !important;
+    color: #000 !important;
+    border-color: var(--text-guide) !important;
+}
+
+#guide-apply-btn:hover {
+    filter: brightness(1.2);
+}
