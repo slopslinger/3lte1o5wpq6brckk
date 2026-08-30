@@ -289,6 +289,55 @@ select, button {
     background-color: var(--guide-highlight);
 }
 
+/* Proof cells — show which placed number blocks a candidate */
+.cell.guide-proof {
+    background-color: rgba(255, 107, 107, 0.35) !important;
+    box-shadow: inset 0 0 0 2px rgba(255, 80, 80, 0.6);
+}
+
+.guide-proof-badge {
+    position: absolute;
+    top: 1px;
+    right: 2px;
+    font-size: 9px;
+    font-weight: 700;
+    color: #ff6b6b;
+    background: rgba(0,0,0,0.5);
+    border-radius: 3px;
+    padding: 0 2px;
+    line-height: 1;
+    pointer-events: none;
+}
+
+/* Proof key in guide panel */
+.guide-proof-key {
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.guide-proof-key span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.guide-proof-key .dot-target {
+    width: 10px; height: 10px;
+    background: var(--bg-guide-cell);
+    border: 2px solid var(--text-guide);
+    border-radius: 2px;
+    display: inline-block;
+}
+.guide-proof-key .dot-proof {
+    width: 10px; height: 10px;
+    background: rgba(255, 107, 107, 0.35);
+    border: 2px solid rgba(255, 80, 80, 0.6);
+    border-radius: 2px;
+    display: inline-block;
+}
+
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-2px); }

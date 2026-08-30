@@ -199,6 +199,41 @@
         return { solution: fullGrid, puzzle };
     }
 
+    // Find which filled cells block a given number from entering (row, col)
+    function getBlockingCells(row, col, num) {
+        const blockers = [];
+        // Check row
+        for (let c = 0; c < 9; c++) {
+            if (c !== col && userGrid[row][c] === num) blockers.push([row, c]);
+        }
+        // Check column
+        for (let r = 0; r < 9; r++) {
+            if (r !== row && userGrid[r][col] === num) blockers.push([r, col]);
+        }
+        // Check box
+        const br = Math.floor(row / 3) * 3;
+        const bc = Math.floor(col / 3) * 3;
+        for (let r = br; r < br + 3; r++) {
+            for (let c = bc; c < bc + 3; c++) {
+                if ((r !== row || c !== col) && userGrid[r][c] === num)
+                    blockers.push([r, c]);
+            }
+        }
+        return blockers;
+    }
+
+    // Collect all proof cells for why value `num` must go in (row, col):
+    // For every other number 1-9, find the cell(s) that block it.
+    function getProofCells(row, col, num) {
+        const proofs = []; // [{r, c, blockedValue}]
+        for (let n = 1; n <= 9; n++) {
+            if (n === num) continue;
+            const blockers = getBlockingCells(row, col, n);
+            for (const [br, bc] of blockers) proofs.push({r: br, c: bc, blockedValue: n});
+        }
+        return proofs;
+    }
+
     // ---- Candidate Calculation (for Guide) ----
 
     function getCandidates(row, col) {
@@ -235,11 +270,13 @@
             if (candidates[key].size === 1) {
                 const [r, c] = key.split(',').map(Number);
                 const num = [...candidates[key]][0];
+                const proofCells = getProofCells(r, c, num);
                 hints.push({
                     row: r, col: c, value: num,
                     technique: 'Naked Single',
-                    explanation: `Cell (${r+1},${c+1}) has only one possible value: <strong>${num}</strong>. All other numbers 1-9 are blocked by rows, columns, or boxes.`,
+                    explanation: `Cell (${r+1},${c+1}) can only be <strong>${num}</strong>. The highlighted cells show what blocks every other number.`,
                     highlightCells: [[r, c]],
+                    proofCells: proofCells,
                     relatedCells: getPeerCells(r, c),
                 });
             }
@@ -261,11 +298,13 @@
                         }
                         if (countInRow === 1 && onlyCell) {
                             const [hr, hc] = onlyCell;
+                            const proofCells = getProofCells(hr, hc, num);
                             hints.push({
                                 row: hr, col: hc, value: num,
                                 technique: 'Hidden Single (Row)',
-                                explanation: `In row ${r+1}, the number <strong>${num}</strong> can ONLY go in cell (${hr+1},${hc+1}). All other empty cells in this row have ${num} blocked by columns or boxes.`,
+                                explanation: `In row ${r+1}, <strong>${num}</strong> can only go in (${hr+1},${hc+1}). Highlighted cells show which numbers are already placed.`,
                                 highlightCells: [[hr, hc]],
+                                proofCells: proofCells,
                                 relatedCells: getRowCells(hr),
                             });
                         }
@@ -280,11 +319,13 @@
                         }
                         if (countInCol === 1 && onlyCellC) {
                             const [hr, hc] = onlyCellC;
+                            const proofCells = getProofCells(hr, hc, num);
                             hints.push({
                                 row: hr, col: hc, value: num,
                                 technique: 'Hidden Single (Column)',
-                                explanation: `In column ${c+1}, the number <strong>${num}</strong> can ONLY go in cell (${hr+1},${hc+1}). All other empty cells in this column have ${num} blocked.`,
+                                explanation: `In column ${c+1}, <strong>${num}</strong> can only go in (${hr+1},${hc+1}). Highlighted cells show which numbers are already placed.`,
                                 highlightCells: [[hr, hc]],
+                                proofCells: proofCells,
                                 relatedCells: getColCells(hc),
                             });
                         }
@@ -303,11 +344,13 @@
                         }
                         if (countInBox === 1 && onlyCellB) {
                             const [hr, hc] = onlyCellB;
+                            const proofCells = getProofCells(hr, hc, num);
                             hints.push({
                                 row: hr, col: hc, value: num,
                                 technique: 'Hidden Single (Box)',
-                                explanation: `In this 3×3 box, the number <strong>${num}</strong> can ONLY go in cell (${hr+1},${hc+1}). Every other empty cell in this box already has ${num} blocked.`,
+                                explanation: `In this 3×3 box, <strong>${num}</strong> can only go in (${hr+1},${hc+1}). Highlighted cells show which numbers are already placed.`,
                                 highlightCells: [[hr, hc]],
+                                proofCells: proofCells,
                                 relatedCells: getBoxCells(hr, hc),
                             });
                         }
@@ -344,6 +387,44 @@
         }
 
         return hints;
+    }
+
+    // Check if this hint is truly valid NOW or needs prior hints applied first.
+    // Returns true if the hint's reasoning holds in current board state.
+    function hintIsValidNow(hint) {
+        if (hint.isPair) return true;
+        const currentCands = getCandidates(hint.row, hint.col);
+        // If only one candidate and it matches the hinted value, it's valid now
+        return currentCands.size === 1 && currentCands.has(hint.value);
+    }
+
+    // Check if this hint depends on other hints being applied first.
+    // Returns array of dependency indices, or empty if the hint stands alone.
+    function checkHintDependencies(hint, allHints) {
+        const deps = [];
+        // If the hint is already valid now, no dependencies
+        if (hintIsValidNow(hint)) return deps;
+
+        // Check which other hints, if applied first, would make this hint valid
+        for (let i = 0; i < allHints.length; i++) {
+            if (i === guideIndex) continue;
+            const other = allHints[i];
+            if (other.isPair || other.value <= 0) continue;
+
+            // Check if applying `other` would eliminate a conflicting candidate
+            const sameUnit = (
+                hint.row === other.row ||
+                hint.col === other.col ||
+                (Math.floor(hint.row/3) === Math.floor(other.row/3) && Math.floor(hint.col/3) === Math.floor(other.col/3))
+            );
+            if (sameUnit) {
+                const currentCands = getCandidates(hint.row, hint.col);
+                if (currentCands.has(other.value)) {
+                    deps.push(i);
+                }
+            }
+        }
+        return deps;
     }
 
     function setsEqual(a, b) {
@@ -408,7 +489,35 @@
             guideNextBtn.textContent = '← Back';
         } else {
             const hint = guideHints[guideIndex];
-            guideExplanation.innerHTML = hint.explanation;
+
+            // Check dependencies
+            const deps = checkHintDependencies(hint, guideHints);
+
+            // Build explanation with dependency note
+            let explHTML = hint.explanation;
+            if (deps.length > 0) {
+                const depNums = deps.map(d => d + 1).join(', ');
+                explHTML += `<br><em style="color:var(--text-secondary)">⚠ Requires hints ${depNums} to be applied first.</em>`;
+            }
+
+            // Show which numbers each proof cell blocks
+            let proofDetail = '';
+            if (hint.proofCells && hint.proofCells.length > 0) {
+                const byValue = {};
+                for (const p of hint.proofCells) {
+                    const v = p.blockedValue;
+                    if (!byValue[v]) byValue[v] = [];
+                    byValue[v].push(`(${p.r+1},${p.c+1})`);
+                }
+                proofDetail = '<div class="guide-proof-key">';
+                for (const [v, cells] of Object.entries(byValue).sort((a,b) => a[0]-b[0])) {
+                    proofDetail += `<span>${cells.join(',')} blocks <strong>${v}</strong></span>`;
+                }
+                proofDetail += '</div>';
+            }
+            explHTML += proofDetail;
+
+            guideExplanation.innerHTML = explHTML;
             guideTechnique.textContent = `${hint.technique} — Hint ${guideIndex + 1}/${guideHints.length}`;
 
             if (hint.isPair) {
@@ -439,6 +548,16 @@
         const relatedSet = new Set();
         if (hint.relatedCells) {
             for (const [r, c] of hint.relatedCells) relatedSet.add(`${r},${c}`);
+        }
+
+        // Build proof cell map: key → blocked value
+        const proofMap = new Map();
+        if (hint.proofCells) {
+            for (const p of hint.proofCells) {
+                const key = `${p.r},${p.c}`;
+                // A cell might block multiple values — show the first one found
+                if (!proofMap.has(key)) proofMap.set(key, p.blockedValue);
+            }
         }
 
         gridEl.innerHTML = '';
@@ -494,6 +613,14 @@
 
                 // Guide highlights
                 if (highlightSet.has(`${r},${c}`)) cell.classList.add('guide-target');
+                else if (proofMap.has(`${r},${c}`)) {
+                    cell.classList.add('guide-proof');
+                    // Show which value this cell blocks as a small badge
+                    const proofBadge = document.createElement('div');
+                    proofBadge.className = 'guide-proof-badge';
+                    proofBadge.textContent = proofMap.get(`${r},${c}`);
+                    cell.appendChild(proofBadge);
+                }
                 else if (relatedSet.has(`${r},${c}`)) cell.classList.add('guide-related');
 
                 cell.addEventListener('click', () => selectCell(r, c));
